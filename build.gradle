@@ -1,0 +1,15 @@
+group 'ru.iav.task'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile 'org.testng:testng:6.10'
+    testCompile 'org.mockito:mockito-core:2.0.87-beta'
+}
