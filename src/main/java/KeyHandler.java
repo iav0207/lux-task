@@ -79,7 +79,7 @@ public class KeyHandler {
                 wait();
             }
         } catch (InterruptedException ex) {
-            throw keyNotProcessed("Thread interrupted while waiting for the key to release", ex, key);
+            throw new KeyNotProcessedException("Thread interrupted while waiting for the key to release", ex, key);
         }
     }
 
@@ -87,7 +87,7 @@ public class KeyHandler {
         try {
             externalSystem.process(key);
         } catch (RuntimeException ex) {
-            throw keyNotProcessed("Exception caught from ext system", ex, key);
+            throw new KeyNotProcessedException("Exception caught from ext system", ex, key);
         }
     }
 
@@ -104,19 +104,19 @@ public class KeyHandler {
     }
 
     private CompletionStage<Key> reportKeyFailed(KeyNotProcessedException ex) {
-        System.out.println("Key was not processed: " + ex.getKey());
+        logFail(ex.getKey());
         ex.printStackTrace();
         if (failuresListener != null)
             failuresListener.manage(ex.getKey());
         return CompletableFuture.completedFuture(ex.getKey());
     }
 
-    private static KeyNotProcessedException keyNotProcessed(String msg, Exception cause, Key key) {
-        return new KeyNotProcessedException(msg, cause, key);
-    }
-
     private static void logSuccess(Key key) {
         System.out.println("Key processed successfully: " + key);
+    }
+
+    private static void logFail(Key key) {
+        System.out.println("Key was not processed: " + key);
     }
 
 }
