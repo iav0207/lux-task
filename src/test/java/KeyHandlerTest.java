@@ -84,7 +84,7 @@ public class KeyHandlerTest {
 
     @Test
     public void shouldSendKeyToFailManagerIfProcessingFailed() throws Exception {
-        KeyHandlerFailuresListener failManager = mock(KeyHandlerFailuresListener.class);
+        KeyHandler.FailuresListener failManager = mock(KeyHandler.FailuresListener.class);
         new KeyHandler(new FailingExternalSystem(), failManager).handle(key("A"));
         Thread.sleep(2000);
         verify(failManager, only()).manage(any(Key.class));

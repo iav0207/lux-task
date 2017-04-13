@@ -9,9 +9,13 @@ import static java.util.Objects.requireNonNull;
  */
 public class KeyHandler {
 
+    public interface FailuresListener {
+        void manage(Key keyThatFailedToBeProcessed);
+    }
+
     private ExternalSystem externalSystem;
 
-    private KeyHandlerFailuresListener failuresListener;
+    private FailuresListener failuresListener;
 
     private ConcurrentHashMap.KeySetView<Key, Boolean> keySet = ConcurrentHashMap.newKeySet();
 
@@ -19,7 +23,7 @@ public class KeyHandler {
         this.externalSystem = requireNonNull(externalSystem);
     }
 
-    public KeyHandler(ExternalSystem externalSystem, KeyHandlerFailuresListener failuresListener) {
+    public KeyHandler(ExternalSystem externalSystem, FailuresListener failuresListener) {
         this(externalSystem);
         this.failuresListener = failuresListener;
     }
@@ -41,7 +45,7 @@ public class KeyHandler {
      *
      * Prints a log message if processing succeeded.
      * If the key is failed to be processed, prints a message to log
-     * and sends the key to a {@link KeyHandlerFailuresListener}, if present, for further actions.
+     * and sends the key to a {@link FailuresListener}, if present, for further actions.
      *
      * @param key a key instance to be sent to the external system.
      * @return {@link CompletionStage}
