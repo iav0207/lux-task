@@ -59,7 +59,7 @@ public class KeyHandlerTest {
             successPercentage = (THREAD_COUNT - 1) * 100 / THREAD_COUNT
     )
     public void shouldExtSystemThrowExceptionIfEqualKeysArePassed() throws Exception {
-        Key key = key("A");
+        Key key = constantKey();
         cyclicBarrier.await();
 
         externalSystem.process(key);
@@ -68,7 +68,15 @@ public class KeyHandlerTest {
     // No exceptions expected here. Just watching successful logs printed to sysOut
     @Test(threadPoolSize = THREAD_COUNT, invocationCount = THREAD_COUNT)
     public void shouldHandlerSendEqualKeysToProcessingSequentially() throws Exception {
-        Key key = key("A");
+        Key key = constantKey();
+        cyclicBarrier.await();
+
+        handler.handle(key);
+    }
+
+    @Test(threadPoolSize = 2 * THREAD_COUNT, invocationCount = 6 * THREAD_COUNT)
+    public void shouldBeOkOnIntermixedKeys() throws Exception {
+        Key key = random.nextBoolean() ? randomKey() : constantKey();
         cyclicBarrier.await();
 
         handler.handle(key);
@@ -84,6 +92,10 @@ public class KeyHandlerTest {
 
     private static Key randomKey() {
         return key(String.valueOf(random.nextInt()));
+    }
+
+    private static Key constantKey() {
+        return key("A000000000");
     }
 
     private static Key key(String s) {

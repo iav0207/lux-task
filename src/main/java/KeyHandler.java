@@ -47,23 +47,23 @@ public class KeyHandler {
      * @return {@link CompletionStage}
      */
     private CompletionStage<Key> submitForProcessing(Key key) {
-        synchronized (this) {
-            try {
+        try {
 
+            synchronized (this) {
                 waitIfKeyIsCurrentlyInProcessing(key);
-
                 reserve(key);
-                sendToExternalSystem(key);
+                notify();
+            }
+            sendToExternalSystem(key);
+            logSuccess(key);
 
-                logSuccess(key);
+        } catch (KeyNotProcessedException ex) {
+            reportKeyFailed(ex);
 
-            } catch (KeyNotProcessedException ex) {
-                reportKeyFailed(ex);
-            } finally {
-
-                release(key);
+        } finally {
+            release(key);
+            synchronized (this) {
                 notifyAll();
-
             }
         }
         return CompletableFuture.completedFuture(key);
